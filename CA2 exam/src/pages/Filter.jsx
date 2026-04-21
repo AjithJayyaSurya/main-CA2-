@@ -6,9 +6,28 @@ const Filter = () => {
   const activities = state.activities || [];
   const [search, setSearch] = useState("");
 
-  const filtered = activities.filter(item =>
-    item.name.toLowerCase().includes(search.toLowerCase())
-  );
+  // Validation function
+  const isValidActivity = (activity) => {
+    return (
+      activity &&
+      Number(activity.steps) > 0 &&
+      Number(activity.caloriesburned) > 0 &&
+      Number(activity.workoutmins) > 0 &&
+      typeof activity.goalachieved === "boolean"
+    );
+  };
+
+  // Filter valid activities and then search
+  const filtered = activities
+    .filter(isValidActivity)
+    .filter(item =>
+      (item.name || "Unknown").toLowerCase().includes(search.toLowerCase())
+    )
+    .map((item) => ({
+      ...item,
+      name: item.name || "Unknown",
+      date: item.date || "No data"
+    }));
 
   return (
     <div>
@@ -31,7 +50,7 @@ const Filter = () => {
           </div>
         ))
       ) : (
-        <p>No activities found</p>
+        <p>No valid activities found</p>
       )}
     </div>
   );

@@ -5,20 +5,33 @@ const Stats = () => {
   const { state } = useContext(AppContext);
   const activities = state.activities || [];
 
-  // Calculate stats using reduce
-  const stats = useMemo(() => {
-    return activities.reduce(
-      (acc, activity) => {
-        acc.total += 1;
-        if (activity.goalachieved === true || activity.goalachieved === "true") {
-          acc.goalAchieved += 1;
-        } else {
-          acc.goalNotAchieved += 1;
-        }
-        return acc;
-      },
-      { total: 0, goalAchieved: 0, goalNotAchieved: 0 }
+  // Validation function
+  const isValidActivity = (activity) => {
+    return (
+      activity &&
+      Number(activity.steps) > 0 &&
+      Number(activity.caloriesburned) > 0 &&
+      Number(activity.workoutmins) > 0 &&
+      typeof activity.goalachieved === "boolean"
     );
+  };
+
+  // Calculate stats using reduce on valid activities only
+  const stats = useMemo(() => {
+    return activities
+      .filter(isValidActivity)
+      .reduce(
+        (acc, activity) => {
+          acc.total += 1;
+          if (activity.goalachieved === true) {
+            acc.goalAchieved += 1;
+          } else {
+            acc.goalNotAchieved += 1;
+          }
+          return acc;
+        },
+        { total: 0, goalAchieved: 0, goalNotAchieved: 0 }
+      );
   }, [activities]);
 
   // Expose global state
@@ -34,7 +47,7 @@ const Stats = () => {
     <div>
       <h2>Activity Stats</h2>
       <div>
-        <h3>Total Activities</h3>
+        <h3>Total Activities (Valid)</h3>
         <div data-testid="total-activities">{stats.total}</div>
       </div>
       <div>
