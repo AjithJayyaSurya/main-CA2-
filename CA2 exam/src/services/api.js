@@ -21,8 +21,9 @@ export const getToken = async (studentId, password, set) => {
 
 export const getDataset = async (token, dataUrl) => {
   try {
-    console.log("Fetching dataset from:", dataUrl);
-    const res = await axios.get(dataUrl, {
+    const fullUrl = `${BASE_URL}${dataUrl}`;
+    console.log("Fetching dataset from:", fullUrl);
+    const res = await axios.get(fullUrl, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
