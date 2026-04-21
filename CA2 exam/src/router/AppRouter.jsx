@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "../pages/Home";
 import Filter from "../pages/Filter";
 import Stats from "../pages/Stats";
@@ -7,6 +7,9 @@ import ToggleGoal from "../pages/ToggleGoal";
 const AppRouter = () => (
   <BrowserRouter>
     <Routes>
+      {/* Default redirect */}
+      <Route path="/" element={<Navigate to="/activities" replace />} />
+
       {/* Activities Routes */}
       <Route path="/activities" element={<Home />} />
       <Route path="/activities/:id" element={<Home />} />
