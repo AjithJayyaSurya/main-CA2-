@@ -7,8 +7,8 @@ const Filter = () => {
   const [stepsInput, setStepsInput] = useState("");
   const [stepError, setStepError] = useState("");
 
-  if (loading) return <div>Loading activities...</div>;
-  if (error) return <div style={{ color: "red" }}>Error: {error}</div>;
+  if (loading) return <div><h2>Loading activities...</h2></div>;
+  if (error) return <div><h2>Error: {error}</h2></div>;
 
   // Handle steps input change with validation
   const handleStepsChange = (e) => {
@@ -50,7 +50,7 @@ const Filter = () => {
     <div>
       <h2>Filter Activities</h2>
 
-      <div style={{ marginBottom: "20px" }}>
+      <div>
         <h3>Search by Name</h3>
         <input
           data-testid="filter-input"
@@ -61,8 +61,8 @@ const Filter = () => {
         />
       </div>
 
-      <div style={{ marginBottom: "20px" }}>
-        <h3>Filter by Steps ({">"}= value)</h3>
+      <div>
+        <h3>Filter by Steps (greater than or equal value)</h3>
         <input
           placeholder="Enter minimum steps"
           value={stepsInput}
@@ -71,10 +71,10 @@ const Filter = () => {
           min="0"
         />
         {stepsInput === "" && (
-          <p style={{ color: "orange" }}>⚠️ Empty input: showing all activities</p>
+          <p>Empty input: showing all activities</p>
         )}
         {stepError && (
-          <p style={{ color: "red" }}>❌ {stepError}</p>
+          <p>{stepError}</p>
         )}
       </div>
 

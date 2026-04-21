@@ -4,8 +4,8 @@ import { useApp } from "../context/AppContext";
 const Stats = () => {
   const { stats, loading, error } = useApp();
 
-  if (loading) return <div>Loading statistics...</div>;
-  if (error) return <div style={{ color: "red" }}>Error: {error}</div>;
+  if (loading) return <div><h2>Loading statistics...</h2></div>;
+  if (error) return <div><h2>Error: {error}</h2></div>;
 
   // Expose global state
   useMemo(() => {
