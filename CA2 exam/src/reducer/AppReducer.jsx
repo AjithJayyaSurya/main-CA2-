@@ -1,16 +1,23 @@
 export const initialState = {
-  activities: []
+  activities: [],
+  loading: true,
 };
 
 export const AppReducer = (state, action) => {
   switch (action.type) {
     case "SET_DATA":
       // Safe extraction of activities array
-      const activitiesData = action.payload?.activities || [];
+      const activitiesData = action.payload || [];
       console.log("SET_DATA - Activities loaded:", activitiesData.length);
       return {
         ...state,
-        activities: activitiesData
+        activities: Array.isArray(activitiesData) ? activitiesData : [],
+      };
+
+    case "SET_LOADING":
+      return {
+        ...state,
+        loading: action.payload,
       };
 
     case "TOGGLE_GOAL":
@@ -28,7 +35,7 @@ export const AppReducer = (state, action) => {
           if (Number(activity.steps) > 8000 && typeof activity.goalachieved === "boolean") {
             return {
               ...activity,
-              goalachieved: !activity.goalachieved
+              goalachieved: !activity.goalachieved,
             };
           }
         }
@@ -37,7 +44,7 @@ export const AppReducer = (state, action) => {
 
       return {
         ...state,
-        activities: updatedActivities
+        activities: updatedActivities,
       };
 
     default:

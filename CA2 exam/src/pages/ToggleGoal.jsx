@@ -1,9 +1,8 @@
-import { useContext, useState } from "react";
-import { AppContext } from "../context/AppContext";
+import { useState } from "react";
+import { useApp } from "../context/AppContext";
 
 const ToggleGoal = () => {
-  const { state, dispatch } = useContext(AppContext);
-  const activities = state.activities || [];
+  const { activities, toggleGoal } = useApp();
   const [selectedId, setSelectedId] = useState("");
   const [message, setMessage] = useState("");
 
@@ -50,10 +49,7 @@ const ToggleGoal = () => {
     }
 
     // Dispatch toggle action
-    dispatch({
-      type: "TOGGLE_GOAL",
-      payload: { id: activityId }
-    });
+    toggleGoal(activityId);
 
     const currentStatus = activity.goalachieved;
     const newStatus = !currentStatus;

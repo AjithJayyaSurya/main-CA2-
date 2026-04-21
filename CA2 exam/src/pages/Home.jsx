@@ -1,11 +1,10 @@
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { AppContext } from "../context/AppContext";
+import { useApp } from "../context/AppContext";
 
 const Home = () => {
-  const { state } = useContext(AppContext);
+  const { activities } = useApp();
   const { id } = useParams();
-  const activities = state.activities || [];
 
   // Validation function
   const isValidActivity = (activity) => {

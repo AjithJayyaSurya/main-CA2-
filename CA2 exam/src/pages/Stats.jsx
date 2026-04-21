@@ -1,9 +1,8 @@
-import { useContext, useMemo, useEffect } from "react";
-import { AppContext } from "../context/AppContext";
+import { useMemo, useEffect } from "react";
+import { useApp } from "../context/AppContext";
 
 const Stats = () => {
-  const { state } = useContext(AppContext);
-  const activities = state.activities || [];
+  const { activities } = useApp();
 
   // Log for debugging
   useEffect(() => {

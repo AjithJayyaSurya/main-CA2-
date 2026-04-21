@@ -1,9 +1,8 @@
-import { useContext, useState } from "react";
-import { AppContext } from "../context/AppContext";
+import { useState } from "react";
+import { useApp } from "../context/AppContext";
 
 const Filter = () => {
-  const { state } = useContext(AppContext);
-  const activities = state.activities || [];
+  const { activities } = useApp();
   const [searchName, setSearchName] = useState("");
   const [stepsInput, setStepsInput] = useState("");
   const [stepError, setStepError] = useState("");
