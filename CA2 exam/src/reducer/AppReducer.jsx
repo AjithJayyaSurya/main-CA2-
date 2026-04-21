@@ -5,9 +5,12 @@ export const initialState = {
 export const AppReducer = (state, action) => {
   switch (action.type) {
     case "SET_DATA":
+      // Safe extraction of activities array
+      const activitiesData = action.payload?.activities || [];
+      console.log("SET_DATA - Activities loaded:", activitiesData.length);
       return {
         ...state,
-        activities: action.payload.activities || []
+        activities: activitiesData
       };
 
     case "TOGGLE_GOAL":

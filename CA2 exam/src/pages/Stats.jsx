@@ -1,9 +1,15 @@
-import { useContext, useMemo } from "react";
+import { useContext, useMemo, useEffect } from "react";
 import { AppContext } from "../context/AppContext";
 
 const Stats = () => {
   const { state } = useContext(AppContext);
   const activities = state.activities || [];
+
+  // Log for debugging
+  useEffect(() => {
+    console.log("Stats - Activities count:", activities.length);
+    console.log("Stats - Activities data:", activities);
+  }, [activities]);
 
   // Validation function
   const isValidActivity = (activity) => {
@@ -18,21 +24,24 @@ const Stats = () => {
 
   // Calculate stats using reduce on valid activities only
   const stats = useMemo(() => {
-    return activities
-      .filter(isValidActivity)
-      .reduce(
-        (acc, activity) => {
-          acc.total += 1;
-          if (activity.goalachieved === true) {
-            acc.goalAchieved += 1;
-          } else {
-            acc.goalNotAchieved += 1;
-          }
-          return acc;
-        },
-        { total: 0, goalAchieved: 0, goalNotAchieved: 0 }
-      );
+    const validActivities = activities.filter(isValidActivity);
+    console.log("Stats - Valid activities count:", validActivities.length);
+
+    return validActivities.reduce(
+      (acc, activity) => {
+        acc.total += 1;
+        if (activity.goalachieved === true) {
+          acc.goalAchieved += 1;
+        } else {
+          acc.goalNotAchieved += 1;
+        }
+        return acc;
+      },
+      { total: 0, goalAchieved: 0, goalNotAchieved: 0 }
+    );
   }, [activities]);
+
+  console.log("Stats - Final stats:", stats);
 
   // Expose global state
   useMemo(() => {
@@ -41,6 +50,7 @@ const Stats = () => {
       goalachievementcount: stats.goalAchieved,
       goalnotachivedcount: stats.goalNotAchieved
     };
+    console.log("window.appState set:", window.appState);
   }, [stats]);
 
   return (

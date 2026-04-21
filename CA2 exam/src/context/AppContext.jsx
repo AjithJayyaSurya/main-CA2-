@@ -1,10 +1,10 @@
 import { createContext, useReducer, useEffect } from "react";
 import { AppReducer, initialState } from "../reducer/AppReducer";
-import { getToken, getPrivateData, getMockData } from "../services/api";
+import { getToken, getPrivateData } from "../services/api";
 
 export const AppContext = createContext();
 
-const STUDENT_ID = "E0323030";
+const STUDENT_ID = "e0323030";
 const PASSWORD = "621780";
 const SET = "b";
 
@@ -14,15 +14,15 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log("Fetching token with:", { STUDENT_ID, PASSWORD, SET });
         const token = await getToken(STUDENT_ID, PASSWORD, SET);
+        console.log("Token received:", token);
         const data = await getPrivateData(token);
+        console.log("Data received:", data);
         dispatch({ type: "SET_DATA", payload: data });
       } catch (error) {
         console.error("API Error:", error.message);
-        console.log("Using mock data as fallback...");
-        // Use mock data if API fails
-        const mockData = getMockData();
-        dispatch({ type: "SET_DATA", payload: mockData });
+        console.error("Full error:", error);
       }
     };
 
