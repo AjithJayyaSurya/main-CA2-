@@ -1,21 +1,13 @@
 import { useState } from "react";
-import { useApp } from "../context/AppContext";
+import { useApp, isValidActivity } from "../context/AppContext";
 
 const ToggleGoal = () => {
-  const { activities, toggleGoal } = useApp();
+  const { activities, loading, error, toggleGoal } = useApp();
   const [selectedId, setSelectedId] = useState("");
   const [message, setMessage] = useState("");
 
-  // Validation function
-  const isValidActivity = (activity) => {
-    return (
-      activity &&
-      Number(activity.steps) > 0 &&
-      Number(activity.caloriesburned) > 0 &&
-      Number(activity.workoutmins) > 0 &&
-      typeof activity.goalachieved === "boolean"
-    );
-  };
+  if (loading) return <div>Loading activities...</div>;
+  if (error) return <div style={{ color: "red" }}>Error: {error}</div>;
 
   // Get valid activities
   const validActivities = activities.filter(isValidActivity);
@@ -23,7 +15,6 @@ const ToggleGoal = () => {
   const handleToggleGoal = () => {
     setMessage("");
 
-    // Validate input
     if (selectedId === "") {
       setMessage("❌ Please select an activity");
       return;

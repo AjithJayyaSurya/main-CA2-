@@ -1,67 +1,53 @@
-import { createContext, useContext, useReducer, useEffect } from "react";
-import { AppReducer } from "../reducer/AppReducer";
+import { createContext, useContext, useEffect, useReducer } from "react";
 import { getToken, getDataset } from "../services/api";
+import { AppReducer, initialState } from "../reducer/AppReducer";
 
-const initialState = {
-  activities: [],
-  loading: true,
-};
+export const AppContext = createContext(null);
 
-export const AppContext = createContext();
+// Export validation function for reuse
+export const isValidActivity = (a) =>
+  Number(a.steps) > 0 &&
+  Number(a.caloriesburned) > 0 &&
+  Number(a.workoutmins) > 0 &&
+  typeof a.goalachieved === "boolean";
 
 export const AppProvider = ({ children }) => {
   const [state, dispatch] = useReducer(AppReducer, initialState);
 
-  // Credential - replace during exam with your details
-  const STUDENT_ID = "E0323030";
-  const PASSWORD = "621780";
-  const SET = "B";
-
-  // Fetch activities from server
   useEffect(() => {
+    let isMounted = true;
     const fetchActivities = async () => {
+      dispatch({ type: "FETCH_START" });
       try {
-        // Step 1: Get Token
-        const tokenRes = await getToken(STUDENT_ID, PASSWORD, SET);
-
-        // Step 2: Fetch dataset
-        const dataUrl = tokenRes.dataUrl || `https://t4e-testserver.onrender.com/api/private/data`;
-        const activities = await getDataset(tokenRes.token, dataUrl);
-
-        dispatch({ type: "SET_DATA", payload: activities || [] });
-        dispatch({ type: "SET_LOADING", payload: false });
-      } catch (err) {
-        console.error("Error fetching activities:", err.message);
-        console.error("Full error:", err);
-        dispatch({ type: "SET_LOADING", payload: false });
+        const tokenRes = await getToken("E0323030", "621780", "setB");
+        const dataset = await getDataset(tokenRes.token, tokenRes.dataUrl);
+        if (!isMounted) return;
+        dispatch({ type: "FETCH_SUCCESS", payload: dataset });
+      } catch (error) {
+        if (!isMounted) return;
+        dispatch({ type: "FETCH_ERROR", payload: error?.message || "Unable to fetch activities." });
       }
     };
-
     fetchActivities();
+    return () => { isMounted = false; };
   }, []);
 
-  // Dispatch methods
   const toggleGoal = (id) => dispatch({ type: "TOGGLE_GOAL", payload: { id } });
 
   return (
-    <AppContext.Provider
-      value={{
-        activities: state.activities,
-        loading: state.loading,
-        dispatch,
-        toggleGoal,
-      }}
-    >
+    <AppContext.Provider value={{
+      activities: state.activities,
+      loading: state.loading,
+      error: state.error,
+      toggleGoal,
+    }}>
       {children}
     </AppContext.Provider>
   );
 };
 
-// Custom hook for easy context access
 export const useApp = () => {
   const context = useContext(AppContext);
-  if (!context) {
-    throw new Error("useApp must be used within AppProvider");
-  }
+  if (!context) throw new Error("useApp must be used within AppProvider");
   return context;
 };

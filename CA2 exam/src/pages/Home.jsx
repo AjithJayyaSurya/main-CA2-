@@ -1,41 +1,24 @@
 import { useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { useApp } from "../context/AppContext";
+import { useApp, isValidActivity } from "../context/AppContext";
 
 const Home = () => {
-  const { activities } = useApp();
+  const { activities, loading, error } = useApp();
   const { id } = useParams();
 
-  // Validation function
-  const isValidActivity = (activity) => {
-    return (
-      activity &&
-      Number(activity.steps) > 0 &&
-      Number(activity.caloriesburned) > 0 &&
-      Number(activity.workoutmins) > 0 &&
-      typeof activity.goalachieved === "boolean"
-    );
-  };
+  if (loading) return <div>Loading activities...</div>;
+  if (error) return <div style={{ color: "red" }}>Error: {error}</div>;
 
   // If ID is provided, show single activity detail
   if (id) {
-    // Validate ID - must be a positive integer
     const numId = parseInt(id, 10);
     if (isNaN(numId) || numId <= 0) {
       return <div>Invalid activity ID</div>;
     }
 
     const activity = activities.find(a => a.id === numId);
-
-    // Handle invalid ID - not found
-    if (!activity) {
-      return <div>Activity not found</div>;
-    }
-
-    // Validate activity data
-    if (!isValidActivity(activity)) {
-      return <div>Invalid activity data</div>;
-    }
+    if (!activity) return <div>Activity not found</div>;
+    if (!isValidActivity(activity)) return <div>Invalid activity data</div>;
 
     // Compute dynamic metrics safely
     const computedMetrics = useMemo(() => {
@@ -57,7 +40,6 @@ const Home = () => {
     return (
       <div>
         <h2>{activity.name || "Unknown"}</h2>
-
         <h3>Basic Details</h3>
         <p><strong>ID:</strong> {activity.id}</p>
         <p><strong>Steps:</strong> {activity.steps}</p>
@@ -65,7 +47,6 @@ const Home = () => {
         <p><strong>Workout Minutes:</strong> {activity.workoutmins}</p>
         <p><strong>Goal Achieved:</strong> {activity.goalachieved ? "Yes ✓" : "No ✗"}</p>
         <p><strong>Date:</strong> {activity.date || "No data"}</p>
-
         <h3>Computed Metrics</h3>
         <p><strong>Steps Per Minute:</strong> {computedMetrics.stepsPerMinute}</p>
         <p><strong>Calories Per Minute:</strong> {computedMetrics.caloriesPerMinute}</p>

@@ -1,30 +1,15 @@
-import { useMemo, useEffect } from "react";
-import { useApp } from "../context/AppContext";
+import { useMemo } from "react";
+import { useApp, isValidActivity } from "../context/AppContext";
 
 const Stats = () => {
-  const { activities } = useApp();
+  const { activities, loading, error } = useApp();
 
-  // Log for debugging
-  useEffect(() => {
-    console.log("Stats - Activities count:", activities.length);
-    console.log("Stats - Activities data:", activities);
-  }, [activities]);
-
-  // Validation function
-  const isValidActivity = (activity) => {
-    return (
-      activity &&
-      Number(activity.steps) > 0 &&
-      Number(activity.caloriesburned) > 0 &&
-      Number(activity.workoutmins) > 0 &&
-      typeof activity.goalachieved === "boolean"
-    );
-  };
+  if (loading) return <div>Loading activities...</div>;
+  if (error) return <div style={{ color: "red" }}>Error: {error}</div>;
 
   // Calculate stats using reduce on valid activities only
   const stats = useMemo(() => {
     const validActivities = activities.filter(isValidActivity);
-    console.log("Stats - Valid activities count:", validActivities.length);
 
     return validActivities.reduce(
       (acc, activity) => {
@@ -40,8 +25,6 @@ const Stats = () => {
     );
   }, [activities]);
 
-  console.log("Stats - Final stats:", stats);
-
   // Expose global state
   useMemo(() => {
     window.appState = {
@@ -49,7 +32,6 @@ const Stats = () => {
       goalachievementcount: stats.goalAchieved,
       goalnotachivedcount: stats.goalNotAchieved
     };
-    console.log("window.appState set:", window.appState);
   }, [stats]);
 
   return (
