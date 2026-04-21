@@ -15,7 +15,7 @@ export const AppProvider = ({ children }) => {
   // Credential - replace during exam with your details
   const STUDENT_ID = "E0323030";
   const PASSWORD = "621780";
-  const SET = "fitness";
+  const SET = "b";
 
   // Fetch activities from server
   useEffect(() => {
