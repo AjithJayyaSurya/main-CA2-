@@ -29,7 +29,20 @@ export const getDataset = async (token, dataUrl) => {
       },
     });
     console.log("Dataset response:", res.data);
-    return res.data.activities || res.data;
+
+    // Handle nested data structure: { data: { activities: [...] } }
+    const activities = res.data?.data?.activities || res.data?.activities || res.data || [];
+
+    // Map API field names to our expected format
+    return activities.map(activity => ({
+      id: activity.activityId,
+      name: activity.name,
+      steps: activity.steps,
+      caloriesburned: activity.caloriesBurned,
+      workoutmins: activity.workoutMinutes,
+      goalachieved: activity.goalAchieved,
+      date: activity.date,
+    }));
   } catch (error) {
     console.error("Dataset error status:", error.response?.status);
     console.error("Dataset error data:", error.response?.data);
