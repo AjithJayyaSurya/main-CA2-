@@ -1,7 +1,38 @@
+// Export initialState for use in context
 export const initialState = {
   activities: [],
+  stats: {
+    total: 0,
+    goalAchieved: 0,
+    goalNotAchieved: 0,
+  },
   loading: true,
   error: null,
+};
+
+// Validation helper
+const isValidActivity = (a) =>
+  Number(a.steps) > 0 &&
+  Number(a.caloriesburned) > 0 &&
+  Number(a.workoutmins) > 0 &&
+  typeof a.goalachieved === "boolean";
+
+// Compute stats from valid activities
+const computeStats = (activities) => {
+  const validActivities = activities.filter(isValidActivity);
+
+  return validActivities.reduce(
+    (acc, activity) => {
+      acc.total += 1;
+      if (activity.goalachieved === true) {
+        acc.goalAchieved += 1;
+      } else {
+        acc.goalNotAchieved += 1;
+      }
+      return acc;
+    },
+    { total: 0, goalAchieved: 0, goalNotAchieved: 0 }
+  );
 };
 
 export const AppReducer = (state, action) => {
@@ -11,7 +42,9 @@ export const AppReducer = (state, action) => {
 
     case "FETCH_SUCCESS":
       // Handle both direct array and {activities: [...]} response
-      const activitiesData = Array.isArray(action.payload) ? action.payload : action.payload?.activities || [];
+      const activitiesData = Array.isArray(action.payload)
+        ? action.payload
+        : action.payload?.activities || [];
       return {
         ...state,
         activities: activitiesData,
@@ -25,6 +58,12 @@ export const AppReducer = (state, action) => {
         loading: false,
         error: action.payload,
         activities: [],
+      };
+
+    case "COMPUTE_STATS":
+      return {
+        ...state,
+        stats: computeStats(state.activities),
       };
 
     case "TOGGLE_GOAL":

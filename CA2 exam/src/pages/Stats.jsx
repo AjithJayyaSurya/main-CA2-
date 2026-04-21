@@ -1,29 +1,11 @@
 import { useMemo } from "react";
-import { useApp, isValidActivity } from "../context/AppContext";
+import { useApp } from "../context/AppContext";
 
 const Stats = () => {
-  const { activities, loading, error } = useApp();
+  const { stats, loading, error } = useApp();
 
-  if (loading) return <div>Loading activities...</div>;
+  if (loading) return <div>Loading statistics...</div>;
   if (error) return <div style={{ color: "red" }}>Error: {error}</div>;
-
-  // Calculate stats using reduce on valid activities only
-  const stats = useMemo(() => {
-    const validActivities = activities.filter(isValidActivity);
-
-    return validActivities.reduce(
-      (acc, activity) => {
-        acc.total += 1;
-        if (activity.goalachieved === true) {
-          acc.goalAchieved += 1;
-        } else {
-          acc.goalNotAchieved += 1;
-        }
-        return acc;
-      },
-      { total: 0, goalAchieved: 0, goalNotAchieved: 0 }
-    );
-  }, [activities]);
 
   // Expose global state
   useMemo(() => {
