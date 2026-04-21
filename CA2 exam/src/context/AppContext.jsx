@@ -1,6 +1,6 @@
 import { createContext, useContext, useReducer, useEffect } from "react";
 import { AppReducer } from "../reducer/AppReducer";
-import { getToken, getDataset, getMockData } from "../services/api";
+import { getToken, getDataset } from "../services/api";
 
 const initialState = {
   activities: [],
@@ -15,7 +15,7 @@ export const AppProvider = ({ children }) => {
   // Credential - replace during exam with your details
   const STUDENT_ID = "E0323030";
   const PASSWORD = "621780";
-  const SET = "b";
+  const SET = "B";
 
   // Fetch activities from server
   useEffect(() => {
@@ -24,17 +24,15 @@ export const AppProvider = ({ children }) => {
         // Step 1: Get Token
         const tokenRes = await getToken(STUDENT_ID, PASSWORD, SET);
 
-        // Step 2: Fetch dataset (might need dataUrl from tokenRes)
-        const dataUrl = tokenRes.dataUrl || `${process.env.REACT_APP_API_URL}/private/data`;
+        // Step 2: Fetch dataset
+        const dataUrl = tokenRes.dataUrl || `https://t4e-testserver.onrender.com/api/private/data`;
         const activities = await getDataset(tokenRes.token, dataUrl);
 
         dispatch({ type: "SET_DATA", payload: activities || [] });
         dispatch({ type: "SET_LOADING", payload: false });
       } catch (err) {
         console.error("Error fetching activities:", err.message);
-        // Fallback to mock data
-        const mockData = getMockData();
-        dispatch({ type: "SET_DATA", payload: mockData.activities });
+        console.error("Full error:", err);
         dispatch({ type: "SET_LOADING", payload: false });
       }
     };
